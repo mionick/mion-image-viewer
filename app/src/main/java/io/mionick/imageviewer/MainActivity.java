@@ -7,6 +7,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +19,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import io.mionick.imageviewer.gestures.RotationGestureDetector;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int MENU_DISPLAYED_MARGIN = 0;
+    private static final int MENU_HIDDEN_MARGIN = -800;
 
     public static final int PICK_IMAGE = 1;
 
@@ -30,11 +36,54 @@ public class MainActivity extends AppCompatActivity {
     private GestureDetector gestureDetector;
     private RotationGestureDetector rotationGestureDetector;
 
+    private ImageView rotationLockedIcon;
+    private boolean rotationEnabled = true;
+    private boolean menuVisible = true;
+
+    private ViewGroup menu;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        menu = findViewById(R.id.menu);
+
+        FloatingActionButton btnHideShow = findViewById(R.id.btn_hide_show);
+        btnHideShow.setOnClickListener(new View.OnClickListener() {
+
+            int newMargin = 0;
+            int oldMargin = 0;
+
+            Animation a = new Animation() {
+
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) menu.getLayoutParams();
+                    params.setMargins(oldMargin + (int)((newMargin - oldMargin) * interpolatedTime),0,0,0);
+                    menu.setLayoutParams(params);
+                }
+            };
+
+            @Override
+            public void onClick(View v) {
+
+                menuVisible = !menuVisible;
+                ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) menu.getLayoutParams();
+                if (menuVisible) {
+                    //p.setMargins(0,0,0,0);
+                    oldMargin = MENU_HIDDEN_MARGIN;
+                    newMargin = MENU_DISPLAYED_MARGIN;
+                } else {
+                    //p.setMargins(0,0,0,-50);
+                    oldMargin = MENU_DISPLAYED_MARGIN;
+                    newMargin = MENU_HIDDEN_MARGIN;
+                }
+                a.setDuration(300); // in ms
+                menu.startAnimation(a);
+            }
+        });
 
         FloatingActionButton getImageButton = findViewById(R.id.get_image);
         getImageButton.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +111,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton lockRotationButton = findViewById(R.id.btn_lock_rotation);
+        rotationLockedIcon = findViewById(R.id.icon_rotation_locked);
+        lockRotationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rotationEnabled  = !rotationEnabled;
+                rotationLockedIcon.setVisibility(rotationEnabled ? View.INVISIBLE : View.VISIBLE);
+            }
+        });
+
         image = findViewById(R.id.image);
 
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
@@ -71,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_IMAGE) {
+        if (requestCode == PICK_IMAGE && data != null) {
             data.getData();
             Uri selectedImage = data.getData();
             image.setImageURI(selectedImage);
@@ -85,7 +144,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onTouchEvent(MotionEvent motionEvent) {
         scaleGestureDetector.onTouchEvent(motionEvent);
         gestureDetector.onTouchEvent(motionEvent);
-        rotationGestureDetector.onTouchEvent(motionEvent);
+        if (rotationEnabled) {
+            rotationGestureDetector.onTouchEvent(motionEvent);
+        }
         return true;
     }
 
@@ -137,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         // killed and restarted.
 
         savedInstanceState.putString("imageUri", imageUri);
+        savedInstanceState.putBoolean("rotationEnabled", rotationEnabled);
 
         // etc.
 
@@ -153,5 +215,9 @@ public class MainActivity extends AppCompatActivity {
 
         imageUri = savedInstanceState.getString("imageUri");
         image.setImageURI(Uri.parse(imageUri));
+        rotationEnabled = savedInstanceState.getBoolean("rotationEnabled");
+        rotationLockedIcon.setVisibility(rotationEnabled ? View.INVISIBLE : View.VISIBLE);
+
+
     }
 }
