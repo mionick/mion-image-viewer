@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/root"
+    >
 
 
     <include layout="@layout/content_main" />
@@ -19,61 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:orientation="horizontal">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/get_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:alpha="0.4"
-                app:srcCompat="@android:drawable/ic_input_add" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:alpha="0.4"
-                app:srcCompat="@android:drawable/ic_menu_revert" />
-
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btn_lock_rotation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:alpha="0.4"
-                    app:srcCompat="@android:drawable/ic_menu_rotate" />
-
-                <ImageView
-                    android:id="@+id/icon_rotation_locked"
-                    android:visibility="invisible"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:alpha="0.4"
-                    android:elevation="20dp"
-                    android:tint="@color/white"
-                    app:srcCompat="@android:drawable/ic_lock_lock" />
-            </FrameLayout>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_hide_show"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:alpha="0.4"
-                app:srcCompat="@android:drawable/ic_menu_more" />
+            android:orientation="horizontal"
+            android:translationZ="100dp">
         </LinearLayout>
     </RelativeLayout>
 
